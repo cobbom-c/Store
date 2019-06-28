@@ -24,4 +24,9 @@ public interface UserMapper {
 						@Param("phone")String phone,
 						@Param("email")String email,
 						@Param("gender")Integer gender);
+	
+	Integer updateAvatar(@Param("uid")Integer uid, 
+						@Param("avatar")String avatar, 
+						@Param("modifiedUser")String modifiedUser,
+						@Param("modifiedTime")Date modifiedTime);
 }

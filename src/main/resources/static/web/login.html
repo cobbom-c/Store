@@ -155,6 +155,7 @@
 				$.post(url,params,function(obj){
 					if(obj.state==1){
 						alert(obj.message);
+						$.cookie("avatar", obj.data.avatar, {"expires":7});
 						window.location.replace("/web/index.html");
 					}else{
 						alert(obj.message);

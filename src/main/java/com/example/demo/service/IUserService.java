@@ -12,4 +12,6 @@ public interface IUserService {
 	public User showUserData(Integer uid);
 	
 	public Integer modigyUserData(Integer uid, String phone, String email, Integer gender);
+	
+	public Integer modifyAvatar(Integer uid, String avatar);
 }

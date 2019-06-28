@@ -21,13 +21,20 @@
 	<update id="updatePassword">
 		UPDATE t_user 
 		SET password=#{password}, modified_user=#{modifiedUser}, modified_time=#{modifiedTime} 
-		WHERE uid=#{uid};
+		WHERE uid=#{uid}
 	</update>
 	
 	<update id="updateUserData">
 		UPDATE t_user 
 		SET phone=#{phone}, email=#{email}, gender=#{gender} 
-		WHERE uid=#{uid};
+		WHERE uid=#{uid}
 	</update>
 	
+	<update id="updateAvatar">
+		UPDATE t_user 
+		SET avatar=#{avatar},
+		modified_user=#{modifiedUser},
+		modified_time=#{modifiedTime} 
+		WHERE uid=#{uid}
+	</update>
 </mapper>
