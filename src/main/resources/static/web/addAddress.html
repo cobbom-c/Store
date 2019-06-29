@@ -19,8 +19,8 @@
 		<link rel="stylesheet" type="text/css" href="../css/layout.css" />
 		<link rel="stylesheet" type="text/css" href="../css/top.css" />
 		<link rel="stylesheet" type="text/css" href="../css/footer.css" />
-		<script type="text/javascript" src="../js/distpicker.data.js"></script>
-		<script type="text/javascript" src="../js/distpicker.js"></script>
+		<!-- <script type="text/javascript" src="../js/distpicker.data.js"></script>
+		<script type="text/javascript" src="../js/distpicker.js"></script> -->
 		</script>
 	</head>
 
@@ -140,62 +140,62 @@
 					</ul>
 					<div class="panel-body">
 						<!--新增收货地址表单开始-->
-						<form class="form-horizontal" role="form">
+						<form id="form_address" class="form-horizontal" role="form">
 							<div class="form-group">
 								<label class="col-md-2 control-label"><span class="txtred">*</span>收货人：</label>
 								<div class="col-md-8">
-									<input type="text" class="form-control" placeholder="请输入收货人姓名">
+									<input id="name" name="name" type="text" class="form-control" placeholder="请输入收货人姓名">
 								</div>
 							</div>
 							<div class="address_content" data-toggle="distpicker">
 								<div class="form-group">
 									<label class="col-md-2 control-label"><span class="txtred">*</span>省/直辖市：</label>
 									<div class="col-md-3">
-										<select class="form-control" data-province="---- 选择省 ----" id="receiverState"></select>
+										<select name="province" class="form-control" data-province="---- 选择省 ----" id="province_list"></select>
 									</div>
 									<label class="col-md-2 control-label"><span class="txtred">*</span>城市：</label>
 									<div class="col-md-3">
-										<select class="form-control" data-city="---- 选择市 ----" id="receiverCity"></select>
+										<select name="city" class="form-control" data-city="---- 选择市 ----" id="city_list"></select>
 									</div>
 								</div>
 								<div class="form-group ">
 									<label class="col-md-2 control-label"><span class="txtred">*</span>区县：</label>
 									<div class="col-md-3">
-										<select class="form-control" data-district="---- 选择区 ----" id="receiverDistrict"></select>
+										<select name="area" class="form-control" data-district="---- 选择区 ----" id="area_list"></select>
 									</div>
 									<label class="col-md-2 control-label">邮政编码：</label>
 									<div class="col-md-3">
-										<input type="text" class="form-control" placeholder="请输入邮政编码">
+										<input name="zip" id="zip" type="text" class="form-control" placeholder="请输入邮政编码">
 									</div>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-2 control-label"><span class="txtred">*</span>详细地址：</label>
 								<div class="col-md-8">
-									<textarea class="form-control" rows="3" placeholder="输入详细的收货地址，小区名称、门牌号等"></textarea>
+									<textarea name="address" id="address" class="form-control" rows="3" placeholder="输入详细的收货地址，小区名称、门牌号等"></textarea>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-2 control-label"><span class="txtred">*</span>手机：</label>
 								<div class="col-md-3">
-									<input type="text" class="form-control" placeholder="请输入手机号码">
+									<input name="phone" id="phone" type="text" class="form-control" placeholder="请输入手机号码">
 								</div>
 								<label class="col-md-2 control-label">固话：</label>
 								<div class="col-md-3">
-									<input type="text" class="form-control" placeholder="请输入固定电话号码">
+									<input name="tel" id="tel" type="text" class="form-control" placeholder="请输入固定电话号码">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-2 control-label">地址类型：</label>
 								<div class="col-md-8">
-									<input type="text" class="form-control" placeholder="请输入地址类型，如：家、公司或者学校">
+									<input name="tag" id="tag" type="text" class="form-control" placeholder="请输入地址类型，如：家、公司或者学校">
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-2 control-label"><a href="address.html">返回</a>&nbsp;&nbsp;&nbsp;</label>
 								<div class="col-sm-10">
-									<input type="button" class="col-md-1 btn btn-primary" value="保存" />
-									<input type="reset" class="col-md-offset-1 col-md-1 btn btn-primary" value="重置" />
+									<input id="address_submit" type="button" class="col-md-1 btn btn-primary" value="保存" />
+									<input id="address_reset" type="reset" class="col-md-offset-1 col-md-1 btn btn-primary" value="重置" />
 								</div>
 							</div>
 						</form>
@@ -288,6 +288,121 @@
 			</div>
 		</footer>
 		<!--页脚结束-->
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$("#address_submit").click(function(){
+					submitform();
+				});
+				showProvince();
+				$("#province_list").change(function(){
+					showCity();
+				})
+				$("#city_list").change(function(){
+					showArea();
+				})
+			});
+			
+			function submitform(){
+				$.ajax({
+					"url":"/address/add",
+					"data":$("#form_address").serialize(),
+					"type":"post",
+					"dataType":"json",
+					"success":function(obj){
+						console.log("obj", obj);
+						if(obj.state == 1){
+							alert("保存成功");
+						}else{
+							alert(obj.message);
+						}
+					},
+					"error":function(){
+						alert("您的登陆信息已过期，请重新登陆");
+					}
+				});
+			}
+			
+			function showArea(){
+				$("#area_list").empty();
+				var op = '<option value="0">---请选择---</option>';
+				$("#area_list").append(op);
+				if($("#city_list").val()==0){
+					return;	
+				}
+				$.ajax({
+					"url":"/district/",
+					"data":"parent="+$("#city_list").val(),
+					"type":"get",
+					"dataType":"json",
+					"success":function(obj){
+						if(obj.state==1){
+							var list = obj.data;
+							console.log("obj",obj);
+							console.log("长度",list.length);
+							for(var i=0;i<list.length;i++){
+								op = '<option value="'+list[i].code+'">'+list[i].name+'</option>';
+								$("#area_list").append(op);
+							}
+						}else{
+							alert(obj.message);
+						}
+					}
+				});
+			}
+			function showCity(){
+				$("#city_list").empty();
+				$("#area_list").empty();
+				var op = '<option value="0">---请选择---</option>';
+				$("#city_list").append(op);
+				$("#area_list").append(op);
+				if($("#province_list").val()==0){
+					return;	
+				}
+				$.ajax({
+					"url":"/district/",
+					"data":"parent="+$("#province_list").val(),
+					"type":"get",
+					"dataType":"json",
+					"success":function(obj){
+						if(obj.state==1){
+							var list = obj.data;
+							console.log("obj",obj);
+							console.log("长度",list.length);
+							for(var i=0;i<list.length;i++){
+								op = '<option value="'+list[i].code+'">'+list[i].name+'</option>';
+								$("#city_list").append(op);
+							}
+						}else{
+							alert(obj.message);
+						}
+					}
+				});
+			}
+			function showProvince(){
+				var op = '<option value="0">---请选择---</option>';
+				$("#province_list").append(op);
+				$.ajax({
+					"url":"/district/",
+					"data":"parent=86",
+					"type":"get",
+					"dataType":"json",
+					"success":function(obj){
+						if(obj.state==1){
+							var list = obj.data;
+							console.log("obj",obj);
+							console.log("长度",list.length);
+							for(var i=0;i<list.length;i++){
+								op = '<option value="'+list[i].code+'">'+list[i].name+'</option>';
+								$("#province_list").append(op);
+							}
+						}else{
+							alert(obj.message);
+						}
+					}
+				});
+			}
+			
+		</script>
 	</body>
 
 </html>
