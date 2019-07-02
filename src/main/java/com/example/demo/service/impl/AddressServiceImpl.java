@@ -1,9 +1,12 @@
 package com.example.demo.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.example.demo.entity.Address;
 import com.example.demo.entity.District;
@@ -66,6 +69,91 @@ public class AddressServiceImpl implements IAddressService{
 		if(row != 1) {
 			throw new ServiceException("创建地址失败");
 		}
+		return row;
+	}
+
+	@Override
+	public List<Address> showAddress(Integer uid) {
+		if(StringUtils.isEmpty(uid)) {
+			 throw new ServiceException("显示地址列表没有给uid");
+		}
+
+		List<Address> listaddr = new ArrayList<>();
+		listaddr = addressmapper.listByUid(uid);
+		
+		for(Address addr : listaddr) {
+			String phone = addr.getPhone();
+			String phonefix = phone.substring(0, 4);
+			String phonesufix = phone.substring(phone.length() - 4, phone.length());
+			addr.setPhone(phonefix + "***" + phonesufix);
+		}
+		
+		return listaddr;
+	}
+
+	@Override
+	public Integer delAddress(Integer aid) {
+		if(StringUtils.isEmpty(aid)) {
+			 throw new ServiceException("显示地址列表没有给aid");
+		}
+		
+		int row = addressmapper.delByAid(aid);
+		if(row != 1) {
+			throw new ServiceException("删除地址失败");
+		}
+		return row;
+	}
+
+	@Override
+	public Integer setDefault(Integer defaultAid, Integer aid, String username) {
+		if(StringUtils.isEmpty(defaultAid)) {
+			 throw new ServiceException("显示地址列表没有给默认aid");
+		}
+		
+		if(StringUtils.isEmpty(aid)) {
+			 throw new ServiceException("显示地址列表没有给aid");
+		}
+		
+		int row = addressmapper.setDefault(aid, username, new Date());
+		
+		row += addressmapper.unsetDefault(defaultAid, username, new Date());
+		if(row != 2) {
+			throw new ServiceException("默认设置失败");
+		}
+		return row;
+	}
+
+	@Override
+	public Address getAddress(Integer aid) {
+		if(StringUtils.isEmpty(aid)) {
+			 throw new ServiceException("显示地址列表没有给aid");
+		}
+		
+		Address addr = addressmapper.getByAid(aid);
+		return addr;
+	}
+
+	@Override
+	public Integer modifyAddress(Address address, String username) {
+		String district = getDistrict(address.getProvince(), address.getCity(), address.getArea());
+
+		Address addr = addressmapper.getByAid(address.getAid());
+
+		if(addr.getProvince()==null||addr.getCity()==null||addr.getArea()==null) {
+			address.setProvince(addr.getProvince());
+			address.setCity(addr.getCity());
+			address.setArea(addr.getArea());
+		}
+		
+		address.setDistrict(district);
+		address.setModifiedUser(username);
+		address.setModifiedTime(new Date());
+		
+		int row = addressmapper.modifyAddress(address);
+		if(row != 1) {
+			throw new ServiceException("修改地址失败");
+		}
+		
 		return row;
 	}
 

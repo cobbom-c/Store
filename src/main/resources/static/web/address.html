@@ -19,7 +19,7 @@
 		<link rel="stylesheet" type="text/css" href="../css/layout.css" />
 		<link rel="stylesheet" type="text/css" href="../css/top.css" />
 		<link rel="stylesheet" type="text/css" href="../css/footer.css" />
-		<script src="../js/adddel.js" type="text/javascript" charset="utf-8"></script>
+		<!-- <script src="../js/adddel.js" type="text/javascript" charset="utf-8"></script> -->
 	</head>
 
 	<body>
@@ -149,7 +149,7 @@
 									<th colspan="3">操作</th>
 								</tr>
 							</thead>
-							<tbody>
+							<tbody id = "tablebody">
 								<tr>
 									<td>家</td>
 									<td>八戒</td>
@@ -269,6 +269,107 @@
 			</div>
 		</footer>
 		<!--页脚结束-->
+		<script type="text/javascript">
+			var defaultnum;
+			var aid = new Array();
+			$(function(){
+				$.ajax({
+					"url" : "/address/show",
+					"type" : "get",
+					"success" : function(obj){
+						
+						var tabledata = "";
+						$("#tablebody").empty();
+						for(var i = 0; i < obj.data.length; i++){
+							aid[i] = obj.data[i].aid;
+							tabledata += "<tr>";
+							tabledata += "<td>" + obj.data[i].tag + "</td>";
+							tabledata += "<td>" + obj.data[i].name + "</td>";
+							tabledata += "<td>" + obj.data[i].district + obj.data[i].address + "</td>";
+							tabledata += "<td>" + obj.data[i].phone + "</td>";
+							tabledata += "<td><a class='btn btn-xs btn-info' href='/web/addAddress.html?aid=" + aid[i] + "'><span class='fa fa-edit'></span> 修改</a></td>";
+							tabledata += "<td><a class='btn btn-xs add-del btn-info'><span class='fa fa-trash-o'></span> 删除</a></td>";
+							tabledata += "<td><a class='btn btn-xs add-def btn-default'>设为默认</a></td>";
+							tabledata += "</tr>";
+							
+							if(obj.data[i].isDefault == 1){
+								defaultnum = i;
+							}
+							
+						}
+						$("#tablebody").append(tabledata);
+
+						$(".add-def:eq(" + defaultnum + ")").hide();
+						
+						$(".add-def").each(function(i, n){
+								setDefault(i, n);
+						});
+							
+						$(".add-del").each(function(i, n){
+								setDelete(i, n);
+						});
+						
+					}
+				})
+			})
+			
+			function setDefault(i, n){
+				$(n).click(function(){
+					$(".add-def").show();
+					$(this).hide();
+					var params = {"defaultAid" : aid[defaultnum], "aid" : aid[i]}
+					defaultnum = i;
+					$.ajax({
+						"url":"/address/default",
+						"data":params,
+						"type":"post",
+						"success":function(obj){
+							//alert(obj.message);
+						},
+						"error":function(obj){
+							//alert(obj.messaeg);
+						}
+					});
+				});
+			}
+			
+			function setDelete(i, n){
+				$(n).click(function(){
+					if (confirm("确定删除这个地址吗？")) {
+						if(defaultnum == i){
+							if(i == 0)
+								var params = {"defaultAid" : aid[i], "aid" : aid[1]}
+							else
+								var params = {"defaultAid" : aid[i], "aid" : aid[0]}
+							$.ajax({
+								"url":"/address/default",
+								"data":params,
+								"type":"post",
+								"success":function(obj){
+									//alert(obj.message);
+								},
+								"error":function(obj){
+									//alert(obj.messaeg);
+								}
+							});
+						}
+						var param = {"aid":aid[i]}
+						$.ajax({
+							"url":"/address/del",
+							"data":param,
+							"type":"post",
+							"success":function(obj){
+								alert(obj.message);
+							},
+							"error":function(obj){
+								alert(obj.message);
+							}
+						});
+						location.href = "address.html";
+					}
+				});
+			}
+		</script>
 	</body>
 
 </html>
