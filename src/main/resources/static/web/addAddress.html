@@ -292,43 +292,47 @@
 			var aid;
 			$(document).ready(function(){
 				var url = location.search;
-				var str = url.substr(1);
-				var request = new Object();
-				request[str.split("=")[0]] = str.split("=")[1];
-				aid = str.split("=")[1];
-				$.ajax({
-					"url":"/address/modify",
-					"data":request,
-					"type":"post",
-					"success":function(obj){
-						$("#name").val(obj.data.name);
-						$("#zip").val(obj.data.zip);
-						$("#address").val(obj.data.address);
-						$("#phone").val(obj.data.phone);
-						$("#tel").val(obj.data.tel);
-						$("#tag").val(obj.data.tag);
-						
-					},
-					"error":function(){
-						alert("您的登陆信息已过期，请重新登陆");
-					}
-				});
+				if(url != ""){
+					var str = url.substr(1);
+					var request = new Object();
+					request[str.split("=")[0]] = str.split("=")[1];
+					aid = str.split("=")[1];
+					$.ajax({
+						"url":"/address/modify",
+						"data":request,
+						"type":"post",
+						"success":function(obj){
+							$("#name").val(obj.data.name);
+							$("#zip").val(obj.data.zip);
+							$("#address").val(obj.data.address);
+							$("#phone").val(obj.data.phone);
+							$("#tel").val(obj.data.tel);
+							$("#tag").val(obj.data.tag);
+							
+						},
+						"error":function(){
+							alert("您的登陆信息已过期，请重新登陆");
+						}
+					});
+				}else{
 				
-				$("#address_submit").click(function(){
-					submitform();
-				});
-				showProvince();
-				$("#province_list").change(function(){
-					showCity();
-				})
-				$("#city_list").change(function(){
-					showArea();
-				})
+					$("#address_submit").click(function(){
+						submitform();
+					});
+					showProvince();
+					$("#province_list").change(function(){
+						showCity();
+					})
+					$("#city_list").change(function(){
+						showArea();
+					})
+				}
 			});
 			
 			function submitform(){
 				var params = $("#form_address").serialize();
-				params += "&aid="+aid;
+				if(aid != null)
+					params += "&aid="+aid;
 				$.ajax({
 					"url":"/address/add",
 					"data":params,

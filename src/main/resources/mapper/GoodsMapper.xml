@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+ 
+ <mapper namespace = "com.example.demo.mapper.GoodsMapper">
+ 	<select id = "findHotList" resultType = "com.example.demo.entity.Goods">
+ 		SELECT id, title, price, image FROM t_goods WHERE status = 1 AND num > 0 ORDER BY priority LIMIT 0, 4
+ 	</select>
+ 	
+ 	<select id = "findById" resultType = "com.example.demo.entity.Goods">
+ 		SELECT id, title, sell_point AS sellPoint, price, image FROM t_goods WHERE id = #{id}
+ 	</select>
+ </mapper>

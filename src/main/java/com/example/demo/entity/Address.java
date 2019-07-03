@@ -7,19 +7,19 @@ public class Address extends BaseEntity{
 	 */
 	private static final long serialVersionUID = -9041487070410442183L;
 	
-	Integer aid;
-	Integer uid;
-	String name;
-	String province;
-	String city;
-	String area;
-	String district;
-	String zip;
-	String address;
-	String phone;
-	String tel;
-	String tag;
-	Integer isDefault;
+	private Integer aid;
+	private Integer uid;
+	private String name;
+	private String province;
+	private String city;
+	private String area;
+	private String district;
+	private String zip;
+	private String address;
+	private String phone;
+	private String tel;
+	private String tag;
+	private Integer isDefault;
 	
 	public Integer getAid() {
 		return aid;

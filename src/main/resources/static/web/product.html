@@ -94,43 +94,43 @@
 		<!--商品信息展示开始-->
 		<div class="container">
 			<div class="col-md-offset-1 col-md-10">
-				<div class="col-md-6">
+				<div id = "images" class="col-md-6">
 					<div data="1" class="img-big move-img col-md-12">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/1_big.png" class="img-responsive" />
+						<img src="..#{image}1_big.png" class="img-responsive" />
 					</div>
 					<div data="2" class="img-big move-img col-md-12">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/2_big.png" class="img-responsive" />
+						<img src="..#{image}2_big.png" class="img-responsive" />
 					</div>
 					<div data="3" class="img-big move-img col-md-12">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/3_big.png" class="img-responsive" />
+						<img src="..#{image}3_big.png" class="img-responsive" />
 					</div>
 					<div data="4" class="img-big move-img col-md-12">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/4_big.png" class="img-responsive" />
+						<img src="..#{image}4_big.png" class="img-responsive" />
 					</div>
 					<div data="5" class="img-big move-img col-md-12">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/5_big.png" class="img-responsive" />
+						<img src="..#{image}5_big.png" class="img-responsive" />
 					</div>
 					<div data="1" class="col-md-2 img-small">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/1.jpg" class="img-responsive" />
+						<img src="..#{image}1.jpg" class="img-responsive" />
 					</div>
 					<div data="2" class="col-md-2 img-small">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/2.jpg" class="img-responsive" />
+						<img src="..#{image}2.jpg" class="img-responsive" />
 					</div>
 					<div data="3" class="col-md-2 img-small">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/3.jpg" class="img-responsive" />
+						<img src="..#{image}3.jpg" class="img-responsive" />
 					</div>
 					<div data="4" class="col-md-2 img-small">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/4.jpg" class="img-responsive" />
+						<img src="..#{image}4.jpg" class="img-responsive" />
 					</div>
 					<div data="5" class="col-md-2 img-small">
-						<img src="../images/portal/11DELLran7000R1605Ssilvery/5.jpg" class="img-responsive" />
+						<img src="..#{image}5.jpg" class="img-responsive" />
 					</div>
 				</div>
 				<div class="col-md-6">
-					<h1 class="col-md-12 title-row-1" title="戴尔Dell 燃700R1605银色">戴尔Dell 燃700R1605银色</h1>
-					<p class="col-md-12 text-row-1"><small>仅上海，广州，沈阳仓有货！预购从速！</small></p>
-					<div class="col-md-12 price-bar">
-						<small>学员售价：</small> ¥4899.00
+					<h1 id = "title" class="col-md-12 title-row-1" title="#{title}">#{title}</h1>
+					<p id = "sellPoint" class="col-md-12 text-row-1"><small>#{sellPoint}</small></p>
+					<div id = "price" class="col-md-12 price-bar">
+						<small>学员售价：</small> #{price}
 						<div><small>*退货补运费 *7天无理由退货 *24小时快速退款 </small></div>
 					</div>
 					<form class="form-inline product-form col-md-12" role="form">
@@ -295,6 +295,77 @@
 			</div>
 		</footer>
 		<!--页脚结束-->
+		<script type = "text/javascript">
+			var id;
+			$(function(){
+				var url = location.search;
+				var param = url.substr(1);
+				var data = new Object();
+				data[param.split("=")[0]] = param.split("=")[1];
+				$.ajax({
+					"url":"/goods/detail",
+					"data":data,
+					"type":"get",
+					"success":function(obj){
+						id = obj.data.id;
+						
+						var imagesHTML = $("#images")[0].innerHTML;
+						imagesHTML = imagesHTML.replace(/#{image}/g, obj.data.image);
+						$("#images")[0].innerHTML = imagesHTML;
+						
+						var titleHTML = $("#title")[0].innerHTML;
+						titleHTML = titleHTML.replace(/#{title}/g, obj.data.title);
+						$("#title")[0].innerHTML = titleHTML;
+						
+						var sellPointHTML = $("#sellPoint")[0].innerHTML;
+						sellPointHTML = sellPointHTML.replace(/#{sellPoint}/g, obj.data.sellPoint);
+						$("#sellPoint")[0].innerHTML = sellPointHTML;
+						
+						var priceHTML = $("#price")[0].innerHTML;
+						priceHTML = priceHTML.replace(/#{price}/g, obj.data.price);
+						$("#price")[0].innerHTML = priceHTML;
+						
+						listen();
+						
+						
+					}
+				});
+				
+				$(".go-cart").click(function(){
+					addToCart();
+				});
+			});
+			
+			function listen(){
+				$(".img-small").hover(function() {
+					$(this).css("border", "1px solid #4288c3");
+				},
+				function() {
+					$(this).css("border", "");
+				})
+				//点击时变化大图片
+				$(".img-small").click(function() {
+					//获得点击的小图片数据
+					var n = $(this).attr("data");
+					//所有大图隐藏
+					$(".img-big").hide();
+					//显示点击的小图对应的大图
+					$(".img-big[data='" + n + "']").show();
+				})
+			}
+			
+			function addToCart(){
+				var param = {"id":id,"num":$("#num").val()};
+				$.ajax({
+					"url":"/cart/add",
+					"data":param,
+					"type":"post",
+					"success":function(obj){
+						alert(obj.message);
+					}
+				});
+			}
+		</script>
 	</body>
 
 </html>
