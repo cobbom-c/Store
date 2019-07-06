@@ -111,7 +111,7 @@
 										<th>操作</th>
 									</tr>
 								</thead>
-								<tbody class="cart-body">
+								<tbody id = "cart" class="cart-body">
 									<tr>
 										<td>
 											<input type="checkbox" class="ckitem" />
@@ -270,6 +270,39 @@
 		<script type="text/javascript">
 			$(function() {
 				//返回链接
+				$("#cart").empty();
+				$.ajax({
+					url:"/cart/show",
+					type:"get",
+					success:function(obj){
+						for(var i = 0 ; i < obj.data.length ; i++){
+							var html = "";
+							html += "<tr>";
+							html +=	"<td><input type='checkbox' class='ckitem' /></td>";
+							html +=	"<td><img src='..#{image}collect.png' class='img-responsive' /></td>";
+							html +=	"<td>#{title}</td><td>¥<span id='goodsPrice1'>#{price}</span></td>";
+							html +=	"<td><input type='button' value='-' class='num-btn' onclick='reduceNum(#{i}, #{id})' />";
+							html +=	"<input id='goodsCount#{i}' type='text' size='2' readonly='readonly' class='num-text' value='#{num}'>";
+							html += "<input class='num-btn' type='button' value='+' onclick='addNum(#{i}, #{id})' /></td>";
+							html += "<td><span id='goodsCast#{i}'>#{count}</span></td>";
+							html += "<td><input id='del' type='button' onclick='delCartItem(this, #{id})' class='cart-del btn btn-default btn-xs' value='删除' /></td>";
+							html += "</tr>";
+							
+							
+							html = html.replace(/#{image}/g, obj.data[i].image);
+							html = html.replace(/#{title}/g, obj.data[i].title);
+							html = html.replace(/#{price}/g, obj.data[i].price);
+							html = html.replace(/#{num}/g, obj.data[i].num);
+							html = html.replace(/#{count}/g, obj.data[i].num * obj.data[i].price);
+							html = html.replace(/#{i}/g, i);
+							html = html.replace(/#{id}/g, obj.data[i].id);
+							$("#cart").append(html);
+						}
+						
+						
+					}
+				});
+				
 				$(".link-account").click(function() {
 					location.href = "orderConfirm.html";
 				})

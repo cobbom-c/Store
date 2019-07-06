@@ -289,13 +289,11 @@
 		<!--页脚结束-->
 		<script type="text/javascript">
 			$(function(){
+				$("#goods").empty();
 				$.ajax({
 					"url":"/goods/hot",
 					"type":"get",
 					"success":function(obj){
-						
-						$("#goods").empty();
-						
 						for(var i = 0; i < obj.data.length; i ++){
 							var html = "";
 							html += "<div class='col-md-12'>";
