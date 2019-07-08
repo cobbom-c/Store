@@ -270,6 +270,8 @@
 		<script type="text/javascript">
 			$(function() {
 				//返回链接
+				var oid;
+				var unselect = true;
 				$("#cart").empty();
 				$.ajax({
 					url:"/cart/show",
@@ -277,7 +279,7 @@
 					success:function(obj){
 						for(var i = 0 ; i < obj.data.length ; i++){
 							var html = "";
-							html += "<tr>";
+							html += "<tr id='#{id}'>";
 							html +=	"<td><input type='checkbox' class='ckitem' /></td>";
 							html +=	"<td><img src='..#{image}collect.png' class='img-responsive' /></td>";
 							html +=	"<td>#{title}</td><td>¥<span id='goodsPrice1'>#{price}</span></td>";
@@ -298,14 +300,51 @@
 							html = html.replace(/#{id}/g, obj.data[i].id);
 							$("#cart").append(html);
 						}
-						
-						
 					}
 				});
 				
-				$(".link-account").click(function() {
-					location.href = "orderConfirm.html";
-				})
+				$(".link-account").click(function(){
+					var totalprice = {"totalprice":$('#selectTotal')[0].innerHTML};
+					$.ajax({
+						url:"/order/add",
+						data:totalprice,
+						type:"post",
+						success:function(obj){
+							oid = obj.data;
+							for (var i = $(".ckitem").length - 1; i >= 0; i--) {
+								//如果选中
+								if ($(".ckitem")[i].checked) {
+									//删除
+									unselected = false;
+									var gid = $($(".ckitem")[i]).parents("tr").attr("id");
+									$.ajax({
+										url:"/orderitem/add",
+										data:"gid=" + gid +"&oid=" + oid,
+										type:"post",
+										success:function(object){
+										},
+										error:function(object){
+											alert(object.message);
+										}
+									});
+								}
+							}
+							if(unselected == true){
+								alert("请选择商品");
+								return;
+							}else{
+								selDelCart();
+
+								location.href = "orderConfirm.html"+"?oid="+oid;
+
+							}
+						},
+						error:function(obj){
+							alert(obj.message);
+						}
+						
+					});
+				});
 			})
 		</script>
 	</body>

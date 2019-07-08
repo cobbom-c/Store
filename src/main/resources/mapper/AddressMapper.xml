@@ -40,4 +40,8 @@
  		modified_user = #{modifiedUser}, modified_time = #{modifiedTime} 
  		WHERE aid = #{aid}
  	</update>
+ 	
+ 	<select id = "getByDefault" resultType = "com.example.demo.entity.Address">
+ 		SELECT * FROM t_address WHERE is_default = 1
+ 	</select>
  </mapper>

@@ -24,4 +24,6 @@ public interface AddressMapper {
 	Address getByAid(Integer aid);
 	
 	Integer modifyAddress(Address address);
+	
+	Address getByDefault();
 }
